@@ -1,0 +1,21 @@
+{
+    "name": "controlaltdelete/git-version",
+    "description": "Find the current git version without using exec",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Michiel Gerritsen",
+            "email": "michiel@controlaltdelete.nl"
+        }
+    ],
+    "require": {
+        "phpunit/phpunit": "^6.1",
+        "object-calisthenics/phpcs-calisthenics-rules": "^2.0",
+        "squizlabs/php_codesniffer": "*"
+    },
+    "autoload": {
+      "psr-4": {
+        "ControlAltDelete\\": "src/"
+      }
+    }
+}
