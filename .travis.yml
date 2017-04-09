@@ -6,6 +6,12 @@ php:
   - 7.0
   - hhvm
 
+before_script: composer install
+
 script:
   - vendor/bin/phpcs src
   - vendor/bin/phpunit test
+
+cache:
+  directories:
+    - $HOME/.composer/cache
