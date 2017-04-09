@@ -20,13 +20,44 @@ namespace ControlAltDelete\Tests;
 
 use ControlAltDelete\GitVersion;
 use PHPUnit\Framework\TestCase;
+use org\bovigo\vfs\vfsStream;
 
 class GitVersionTest extends TestCase
 {
-    public function testShouldDefaultWhenNotFound()
-    {
-        $result = GitVersion::find();
+    /**
+     * @var \org\bovigo\vfs\vfsStreamDirectory
+     */
+    private $root;
 
-        $this->assertEquals('v0.0.1', $result);
+    public function setUp()
+    {
+        $structure = [
+            '.git' => [
+                'refs' => [
+                    'tags' => [
+                        'v1.0' => 'v1.0',
+                        'v10.0' => 'v10.0',
+                        'v2.0' => 'v2.0',
+                    ]
+                ]
+            ]
+        ];
+
+        $this->root = vfsStream::setup('root', null, $structure);
+    }
+
+    /**
+     * @expectedException \ControlAltDelete\DirectoryNotFoundException
+     */
+    public function testShouldThrowAnExceptionWhenDirectoryNotFound()
+    {
+        GitVersion::find('random/directory/that/does/not/exists');
+    }
+
+    public function testUsesNatsorting()
+    {
+        $result = GitVersion::find($this->root->url());
+
+        $this->assertEquals('v10.0', $result);
     }
 }

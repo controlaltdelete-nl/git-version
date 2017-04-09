@@ -25,23 +25,28 @@ class GitVersion
     static private $version;
 
     /**
+     * @var array
+     */
+    static private $fileList = [];
+
+    /**
      * Retrieve the git version number.
      *
      * @param null $directory
      * @return string
+     * @throws DirectoryNotFoundException
      */
     public static function find($directory = null)
     {
         $iterator = self::getDirectory($directory);
         if (!$iterator) {
-            static::$version = 'v0.0.1';
-            return static::$version;
+            throw new DirectoryNotFoundException;
         }
 
-        $files = self::getFileList($iterator);
+        static::loadFileList($iterator);
 
-        natsort($files);
-        static::$version = end($files);
+        natsort(static::$fileList);
+        static::$version = end(static::$fileList);
 
         return static::$version;
     }
@@ -50,16 +55,11 @@ class GitVersion
      * @param $files
      * @return array
      */
-    private static function getFileList(\DirectoryIterator $files)
+    private static function loadFileList(\DirectoryIterator $files)
     {
-        $files = static::directoryIteratorToArray($files);
-        $files = array_filter($files, function (\DirectoryIterator $file) {
-            return !$file->isDot() && $file->isFile();
-        });
-
-        return array_map(function (\DirectoryIterator $file) {
-            return $file->getFilename();
-        }, $files);
+        foreach ($files as $file) {
+            static::processFile($file);
+        }
     }
 
     /**
@@ -76,13 +76,15 @@ class GitVersion
         return new \DirectoryIterator($path);
     }
 
-    private static function directoryIteratorToArray(\DirectoryIterator $files)
+    /**
+     * @param \DirectoryIterator $file
+     */
+    private static function processFile(\DirectoryIterator $file)
     {
-        $output = [];
-        foreach ($files as $file) {
-            $output[] = $file;
+        if ($file->isDot() || !$file->isFile()) {
+            return;
         }
 
-        return $output;
+        static::$fileList[] = $file->getFilename();
     }
 }
