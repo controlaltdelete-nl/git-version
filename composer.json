@@ -15,7 +15,7 @@
         "phpunit/phpunit": "^6.1",
         "object-calisthenics/phpcs-calisthenics-rules": "^2.0",
         "squizlabs/php_codesniffer": "*",
-        "mikey179/vfsStream": "^1.6"
+        "mikey179/vfsstream": "^1.6"
     },
     "autoload": {
       "psr-4": {
